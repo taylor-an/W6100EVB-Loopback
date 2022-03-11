@@ -27,7 +27,17 @@ void W6100Initialze(void)
 #endif
 
 	uint8_t temp;
-	unsigned char W6100_AdrSet[2][8] = {{2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}};
+	//unsigned char W6100_AdrSet[2][8] = {{2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}};
+	unsigned char W6100_AdrSet[2][8] = {{16, 0, 0, 0, 0, 0, 0, 0}, {16, 0, 0, 0, 0, 0, 0, 0}};
+
+#if 1
+	if (ctlwizchip(CW_INIT_WIZCHIP, (void*) W6100_AdrSet) == -1)
+	{
+		printf("WIZCHIP Initialized fail.\r\n");
+		while (1);
+	}
+#endif
+
 	do
 	{
 		if (ctlwizchip(CW_GET_PHYLINK, (void *)&temp) == -1)

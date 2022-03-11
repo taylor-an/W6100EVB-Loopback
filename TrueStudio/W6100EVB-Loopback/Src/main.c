@@ -4,9 +4,9 @@
 #include "board_init.h"
 
 wiz_NetInfo gWIZNETINFO = { .mac = {0x00,0x08,0xdc,0xFF,0xFF,0xFF},
-							.ip = {192,168,177,25},
+							.ip = {192,168,0,80},
 							.sn = {255, 255, 255, 0},
-							.gw = {192, 168, 177, 1},
+							.gw = {192, 168, 0, 1},
 							.dns = {168, 126, 63, 1},
 							//.dhcp = NETINFO_STATIC,
 							.lla={0xfe,0x80,0x00,0x00,
@@ -37,12 +37,13 @@ uint8_t mcastipv4_3[4] ={239,1,2,6};
 
 uint16_t WIZ_Dest_PORT = 15000;                                 //DST_IP port
 
-#define ETH_MAX_BUF_SIZE	1024
+#define ETH_MAX_BUF_SIZE	1024*16
 
 uint8_t  remote_ip[4] = {192,168,177,200};                      //
 uint16_t remote_port = 8080;
 
 unsigned char ethBuf0[ETH_MAX_BUF_SIZE];
+#if 0
 unsigned char ethBuf1[ETH_MAX_BUF_SIZE];
 unsigned char ethBuf2[ETH_MAX_BUF_SIZE];
 unsigned char ethBuf3[ETH_MAX_BUF_SIZE];
@@ -50,6 +51,7 @@ unsigned char ethBuf4[ETH_MAX_BUF_SIZE];
 unsigned char ethBuf5[ETH_MAX_BUF_SIZE];
 unsigned char ethBuf6[ETH_MAX_BUF_SIZE];
 unsigned char ethBuf7[ETH_MAX_BUF_SIZE];
+#endif
 
 uint8_t bLoopback = 1;
 uint8_t bRandomPacket = 0;
@@ -73,6 +75,9 @@ int main(void)
 
 	BoardInitialze();
 	
+	// 20220307 taylor
+	printf("Compiled@%s/%s\r\n", __DATE__, __TIME__);
+
 	ctlwizchip(CW_SYS_UNLOCK,& syslock);
 	ctlnetwork(CN_SET_NETINFO,&gWIZNETINFO);
 
@@ -80,15 +85,27 @@ int main(void)
 
 	print_network_information();
 
+#ifdef DMA
+	printf("DMA SPI\r\n");
+#else
+	printf("SPI\r\n");
+#endif
 
 	while(1)
     {
+
+#if 0
+		// tcp server
+		loopback_tcps(0,ethBuf0,50000,AS_IPV4);
+#else
+		// udp server
 	    loopback_udps(0,ethBuf0,50000,AS_IPV4);
-		loopback_tcps(1,ethBuf3,50003,AS_IPV4);
-		loopback_tcps(2,ethBuf4,50004,AS_IPV6);
-		loopback_tcps(3,ethBuf5,50005,AS_IPDUAL);
-
-
+#endif
+#if 0
+		loopback_tcps(1,ethBuf1,50003,AS_IPV4);
+		loopback_tcps(2,ethBuf2,50004,AS_IPV6);
+		loopback_tcps(3,ethBuf3,50005,AS_IPDUAL);
+#endif
     }
 }
 
